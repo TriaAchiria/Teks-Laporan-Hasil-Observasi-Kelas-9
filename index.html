@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Observasi - Media Pembelajaran Interaktif LHO</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pixarBlue: '#1EA1F2',
+                        pixarYellow: '#FFD13B',
+                        pixarPurple: '#6C5CE7',
+                        pixarGreen: '#00B894',
+                        pixarRed: '#FF7675',
+                        pixarBg: '#F0F3F8',
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        body: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        '3d': '0px 10px 0px 0px rgba(0, 0, 0, 0.15)',
+                        '3d-btn': '0px 6px 0px 0px #4b38b3',
+                        '3d-btn-green': '0px 6px 0px 0px #00896f',
+                        '3d-btn-yellow': '0px 6px 0px 0px #d4a300',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .pixar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 4px solid #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+        .pixar-btn {
+            transition: all 0.1s ease;
+        }
+        .pixar-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px 0px rgba(0,0,0,0.2) !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #6C5CE7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Header Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b-4 border-purple-200">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('beranda')">
+                <div class="w-12 h-12 bg-gradient-to-tr from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-md transform -rotate-6">
+                    <i class="fa-solid font-heading">LHO</i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-indigo-900 leading-tight">Detektif Observasi</h1>
+                    <p class="text-xs text-purple-600 font-semibold">Bahasa Indonesia Kelas 9 • SMP 2 Daar El Qolam</p>
+                </div>
+            </div>
+
+            <!-- Nav Items Desktop -->
+            <nav class="hidden md:flex space-x-2">
+                <button onclick="switchTab('panduan')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-compass text-purple-500"></i> Panduan</button>
+                <button onclick="switchTab('tujuan')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-bullseye text-red-500"></i> Tujuan</button>
+                <button onclick="switchTab('materi')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-book-open text-blue-500"></i> Materi & Lab</button>
+                <button onclick="switchTab('gim')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-gamepad text-green-500"></i> Mini Gim</button>
+                <button onclick="switchTab('kuis')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> Kuis Final</button>
+                <button onclick="switchTab('pengembang')" class="nav-btn px-4 py-2 rounded-xl font-bold text-slate-700 hover:bg-purple-100 hover:text-purple-700 transition flex items-center gap-2"><i class="fa-solid fa-user-ninja text-indigo-500"></i> Guru</button>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-2xl text-purple-700 p-2 focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-purple-100 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('panduan'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-compass text-purple-500 w-6"></i> Panduan</button>
+            <button onclick="switchTab('tujuan'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-bullseye text-red-500 w-6"></i> Tujuan Pembelajaran</button>
+            <button onclick="switchTab('materi'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-book-open text-blue-500 w-6"></i> Materi & Lab Observasi</button>
+            <button onclick="switchTab('gim'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-gamepad text-green-500 w-6"></i> 3 Mini Gim</button>
+            <button onclick="switchTab('kuis'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-star text-yellow-500 w-6"></i> Kuis Evaluasi</button>
+            <button onclick="switchTab('pengembang'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg font-bold text-slate-700 hover:bg-purple-100"><i class="fa-solid fa-user-ninja text-indigo-500 w-6"></i> Profil Pengembang</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full">
+
+        <!-- ================= BERANDA ================= -->
+        <section id="tab-beranda" class="tab-content block">
+            <div class="pixar-card p-6 md:p-10 text-center relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-300 rounded-full blur-2xl opacity-50"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-400 rounded-full blur-2xl opacity-50"></div>
+
+                <div class="relative z-10 max-w-3xl mx-auto">
+                    <!-- Avatar Animation Pixar Style -->
+                    <div class="inline-block relative mb-4">
+                        <div class="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full p-2 shadow-xl mx-auto transform hover:scale-105 transition duration-300">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" alt="Pixar Character Teacher" class="w-full h-full object-cover rounded-full border-4 border-white">
+                        </div>
+                        <span class="absolute bottom-2 right-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full border-2 border-white shadow">
+                            <i class="fa-solid fa-check"></i> Guru LHO
+                        </span>
+                    </div>
+
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-indigo-900 mb-4">Selamat Datang, Detektif Muda! 👋</h2>
+                    <p class="text-slate-600 text-lg md:text-xl mb-8 leading-relaxed">
+                        Siap meneliti dunia di sekitarmu? Mari belajar menyusun **Teks Laporan Hasil Observasi (LHO)** dengan cara yang seru, interaktif, dan penuh gim keren!
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div onclick="switchTab('materi')" class="bg-indigo-50 hover:bg-indigo-100 p-4 rounded-2xl border-2 border-indigo-200 cursor-pointer transition transform hover:-translate-y-1">
+                            <div class="text-3xl text-indigo-600 mb-2"><i class="fa-solid fa-microscope"></i></div>
+                            <h3 class="font-bold text-indigo-900">Lab Observasi</h3>
+                            <p class="text-xs text-slate-500 mt-1">Pahami pengertian & struktur LHO secara langsung.</p>
+                        </div>
+                        <div onclick="switchTab('gim')" class="bg-emerald-50 hover:bg-emerald-100 p-4 rounded-2xl border-2 border-emerald-200 cursor-pointer transition transform hover:-translate-y-1">
+                            <div class="text-3xl text-emerald-600 mb-2"><i class="fa-solid fa-gamepad"></i></div>
+                            <h3 class="font-bold text-emerald-900">3 Mini Gim</h3>
+                            <p class="text-xs text-slate-500 mt-1">Asah pemahamanmu lewat tantangan gim seru!</p>
+                        </div>
+                        <div onclick="switchTab('kuis')" class="bg-amber-50 hover:bg-amber-100 p-4 rounded-2xl border-2 border-amber-200 cursor-pointer transition transform hover:-translate-y-1">
+                            <div class="text-3xl text-amber-600 mb-2"><i class="fa-solid fa-trophy"></i></div>
+                            <h3 class="font-bold text-amber-900">Kuis Final</h3>
+                            <p class="text-xs text-slate-500 mt-1">Uji kemampuanmu & dapatkan efek sorak meriah!</p>
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('panduan')" class="pixar-btn bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-lg px-8 py-4 rounded-2xl shadow-3d-btn hover:shadow-lg transition">
+                        Mulai Petualangan <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PANDUAN ================= -->
+        <section id="tab-panduan" class="tab-content hidden">
+            <div class="pixar-card p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6 border-b-2 border-slate-100 pb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Panduan Penggunaan Media</h2>
+                        <p class="text-sm text-slate-500">Ikuti langkah mudah ini untuk pengalaman belajar terbaik!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-4 p-4 bg-purple-50 rounded-2xl border border-purple-100">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">1</div>
+                        <div>
+                            <h3 class="font-bold text-purple-900 text-lg">Baca Tujuan & Materi</h3>
+                            <p class="text-sm text-slate-600 mt-1">Mulailah dengan memahami **Tujuan Pembelajaran**, lalu pelajari **Materi & Simulasi Observasi Bunga** untuk memahami ciri dan struktur LHO.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">2</div>
+                        <div>
+                            <h3 class="font-bold text-blue-900 text-lg">Coba Simulasi Stack & Queue</h3>
+                            <p class="text-sm text-slate-600 mt-1">Pelajari bagaimana data observasi dikelola menggunakan logika **Stack (Tumpukan)** dan **Queue (Antrean)** pada menu Materi!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">3</div>
+                        <div>
+                            <h3 class="font-bold text-emerald-900 text-lg">Mainkan 3 Mini Gim</h3>
+                            <p class="text-sm text-slate-600 mt-1">Uji kejelianmu dalam membedakan kalimat definisi, memilah struktur teks, serta menyusun antrean & tumpukan fakta!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                        <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">4</div>
+                        <div>
+                            <h3 class="font-bold text-amber-900 text-lg">Kerjakan Kuis Evaluasi</h3>
+                            <p class="text-sm text-slate-600 mt-1">Jawab 5 soal pilihan ganda. Dapatkan skor sempurna untuk mendengarkan **efek suara sorak sorai meriah** 🎉!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button onclick="switchTab('tujuan')" class="pixar-btn bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl shadow-3d-btn hover:bg-indigo-700">
+                        Lanjut ke Tujuan Pembelajaran <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TUJUAN PEMBELAJARAN ================= -->
+        <section id="tab-tujuan" class="tab-content hidden">
+            <div class="pixar-card p-6 md:p-10 text-center">
+                <div class="w-20 h-20 bg-red-100 text-red-500 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-2">Tujuan Pembelajaran (TP)</h2>
+                <p class="text-indigo-600 font-semibold mb-8">Fase D • Kelas 9 SMP (Usia 13-14 Tahun)</p>
+
+                <div class="max-w-2xl mx-auto bg-gradient-to-r from-purple-500 to-indigo-600 p-1 rounded-3xl shadow-xl mb-8">
+                    <div class="bg-white p-6 md:p-8 rounded-[22px]">
+                        <ul class="text-left space-y-4 text-slate-700 font-medium text-lg">
+                            <li class="flex items-start gap-3">
+                                <span class="bg-green-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5"><i class="fa-solid fa-check"></i></span>
+                                <span><strong>Memahami:</strong> Murid dapat menjelaskan definisi, struktur, dan ciri kebahasaan Teks Laporan Hasil Observasi (LHO).</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="bg-green-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5"><i class="fa-solid fa-check"></i></span>
+                                <span><strong>Membuat:</strong> Murid dapat mengumpulkan data objek observasi dan merancangnya menjadi Teks LHO secara runtut & sistematis.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-4">
+                    <button onclick="switchTab('materi')" class="pixar-btn bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-3 rounded-2xl shadow-3d-btn-green">
+                        Mulai Belajar Materi <i class="fa-solid fa-book-open ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MATERI & LAB SIMULASI ================= -->
+        <section id="tab-materi" class="tab-content hidden">
+            <div class="space-y-6">
+                <!-- Sub Menu Navigation for Materi -->
+                <div class="flex flex-wrap gap-2 justify-center bg-white/70 p-2 rounded-2xl border-2 border-white backdrop-blur">
+                    <button onclick="showSubMateri('definisi')" class="submateri-btn active-sub font-bold px-4 py-2 rounded-xl text-sm transition bg-indigo-600 text-white">1. Definisi & Ciri Kebahasaan</button>
+                    <button onclick="showSubMateri('struktur')" class="submateri-btn font-bold px-4 py-2 rounded-xl text-sm transition bg-white text-slate-700 hover:bg-indigo-50">2. Struktur Teks LHO</button>
+                    <button onclick="showSubMateri('lab')" class="submateri-btn font-bold px-4 py-2 rounded-xl text-sm transition bg-white text-slate-700 hover:bg-indigo-50">3. Lab Observasi Bunga 🌸</button>
+                    <button onclick="showSubMateri('strukturdata')" class="submateri-btn font-bold px-4 py-2 rounded-xl text-sm transition bg-white text-slate-700 hover:bg-indigo-50">4. Logika Stack & Queue 📦</button>
+                </div>
+
+                <!-- Sub 1: Definisi & Kebahasaan -->
+                <div id="sub-definisi" class="submateri-card pixar-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-indigo-500"></i> Pengertian Teks LHO
+                    </h3>
+                    <p class="text-slate-700 leading-relaxed mb-6 text-base md:text-lg">
+                        <strong>Observasi</strong> adalah proses mencari data fakta melalui pengamatan langsung. 
+                        Nah, **Teks Laporan Hasil Observasi (LHO)** adalah teks yang memberikan informasi secara ilmiah mengenai suatu objek (tumbuhan, hewan, tempat, atau fenomena) setelah diteliti secara sistematis!
+                    </p>
+
+                    <h4 class="text-xl font-bold text-slate-800 mb-3 border-t pt-4">Ciri-Ciri Kebahasaan Teks LHO:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center mb-2">1</div>
+                            <h5 class="font-bold text-indigo-900 mb-1">Kalimat Definisi</h5>
+                            <p class="text-xs text-slate-600 mb-2">Menggunakan kata **"adalah"**, **"merupakan"**, atau **"yaitu"** untuk menjelaskan makna objek.</p>
+                            <div class="bg-white p-2 rounded-lg text-xs italic text-indigo-800 border border-indigo-100">
+                                Contoh: "Kemangi adalah dedaunan kecil yang memiliki aroma khas limau."
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-2xl">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center mb-2">2</div>
+                            <h5 class="font-bold text-emerald-900 mb-1">Kalimat Deskripsi</h5>
+                            <p class="text-xs text-slate-600 mb-2">Menggambarkan ciri-ciri khusus objek secara terperinci (fisik, warna, ukuran).</p>
+                            <div class="bg-white p-2 rounded-lg text-xs italic text-emerald-800 border border-emerald-100">
+                                Contoh: "Bunganya berwarna ungu muda dengan mahkota berukuran 1-2 cm."
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-50 border-2 border-purple-200 p-4 rounded-2xl">
+                            <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center mb-2">3</div>
+                            <h5 class="font-bold text-purple-900 mb-1">Konjungsi (Kata Hubung)</h5>
+                            <p class="text-xs text-slate-600 mb-2">Kata penghubung antar kata atau kalimat seperti **dan, atau, serta, dengan**.</p>
+                            <div class="bg-white p-2 rounded-lg text-xs italic text-purple-800 border border-purple-100">
+                                Contoh: "Daunnya berbentuk lonjong **dan** terasa halus saat disentuh."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub 2: Struktur LHO -->
+                <div id="sub-struktur" class="submateri-card pixar-card p-6 md:p-8 hidden">
+                    <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-purple-500"></i> Struktur Teks LHO
+                    </h3>
+                    <p class="text-slate-600 mb-6">Agar laporanmu rapi dan disukai pembaca, susunlah sesuai 4 bagian struktur wajib berikut ini:</p>
+
+                    <div class="space-y-4">
+                        <div class="flex gap-4 items-start bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white font-extrabold flex items-center justify-center text-xl flex-shrink-0 shadow">1</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-slate-800">Judul</h4>
+                                <p class="text-sm text-slate-600">Nama objek yang diobservasi secara singkat & jelas. (Contoh: *Laporan Observasi Bunga Mawar*)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-500 text-white font-extrabold flex items-center justify-center text-xl flex-shrink-0 shadow">2</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-blue-900">Definisi Umum / Klasifikasi</h4>
+                                <p class="text-sm text-slate-600">Pengenalan objek, klasifikasi, dan batasan umum (menggunakan kalimat definisi).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white font-extrabold flex items-center justify-center text-xl flex-shrink-0 shadow">3</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-emerald-900">Deskripsi Bagian</h4>
+                                <p class="text-sm text-slate-600">Penjelasan detail mengenai bagian-bagian objek (daun, batang, bunga, dll.) secara rinci.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 items-start bg-purple-50 p-4 rounded-2xl border-2 border-purple-200">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500 text-white font-extrabold flex items-center justify-center text-xl flex-shrink-0 shadow">4</div>
+                            <div>
+                                <h4 class="font-bold text-lg text-purple-900">Deskripsi Manfaat / Penutup</h4>
+                                <p class="text-sm text-slate-600">Penjelasan tentang kegunaan, fungsi, atau kesimpulan dari objek yang diamati.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub 3: Lab Observasi Bunga -->
+                <div id="sub-lab" class="submateri-card pixar-card p-6 md:p-8 hidden">
+                    <h3 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-seedling text-green-500"></i> Lab Observasi Bunga Interaktif
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-6">Klik bagian bunga di bawah ini untuk mengumpulkan data observasi langsung!</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <!-- Visual Bunga Pixar Style Interactive -->
+                        <div class="bg-gradient-to-b from-sky-100 to-emerald-100 p-6 rounded-3xl border-4 border-white shadow-inner text-center relative min-h-[320px] flex flex-col justify-center items-center">
+                            <!-- High Quality Flower Image -->
+                            <img id="lab-flower-img" src="https://images.unsplash.com/photo-1560717845-968823efbee1?auto=format&fit=crop&q=80&w=600" alt="Bunga Mawar/Kemangi" class="w-48 h-48 object-cover rounded-full border-4 border-white shadow-2xl transition transform hover:scale-105 duration-300">
+
+                            <!-- Interactive Hotspots -->
+                            <div class="flex flex-wrap gap-2 justify-center mt-6">
+                                <button onclick="observePart('mahkota')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-md transition">🌸 Mahkota Bunga</button>
+                                <button onclick="observePart('daun')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-md transition">🍃 Daun & Batang</button>
+                                <button onclick="observePart('manfaat')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-md transition">✨ Manfaat Objek</button>
+                            </div>
+                        </div>
+
+                        <!-- Panel Hasil Observasi -->
+                        <div class="bg-white p-5 rounded-2xl border-2 border-purple-100 shadow-sm">
+                            <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Hasil Pengamatan Detektif:</span>
+                            <h4 id="lab-title" class="text-xl font-bold text-indigo-900 mt-1 mb-2">Pilih bagian bunga di samping!</h4>
+                            <div id="lab-body" class="text-slate-600 text-sm leading-relaxed min-h-[100px] flex items-center">
+                                Klik salah satu tombol di sebelah kiri untuk melihat catatan hasil pengamatan laboratorium.
+                            </div>
+                            <div id="lab-tag" class="mt-4 hidden">
+                                <span class="text-xs bg-indigo-100 text-indigo-700 font-semibold px-3 py-1 rounded-full">Kategori: <span id="lab-tag-text"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub 4: Logika Stack & Queue -->
+                <div id="sub-strukturdata" class="submateri-card pixar-card p-6 md:p-8 hidden">
+                    <h3 class="text-2xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group text-amber-500"></i> Struktur Data: Stack (Tumpukan) & Queue (Antrean)
+                    </h3>
+                    <p class="text-slate-600 text-sm mb-6">Tahukah kamu? Dalam mengolah catatan data observasi, kita bisa menggunakan logika **Stack** dan **Queue** agar penulisan LHO teratur!</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- STACK -->
+                        <div class="bg-amber-50 border-2 border-amber-200 p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-bold text-lg text-amber-900">1. Stack (Tumpukan / LIFO)</h4>
+                                <span class="text-xs bg-amber-200 text-amber-800 font-bold px-2 py-1 rounded">Last In, First Out</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-4">
+                                Seperti **menumpuk piring atau buku**. Catatan terakhir yang kamu tambahkan adalah yang **pertama kali** kamu ambil/edit kembali!
+                            </p>
+                            <!-- Mini Demo Stack -->
+                            <div class="bg-white p-3 rounded-xl border mb-3 min-h-[120px] flex flex-col-reverse gap-1" id="stack-container">
+                                <div class="text-xs text-slate-400 text-center my-auto">Tumpukan Catatan Observasi Masih Kosong</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="pushStack()" class="flex-1 bg-amber-500 text-white font-bold text-xs py-2 rounded-lg hover:bg-amber-600">+ Push (Tambah)</button>
+                                <button onclick="popStack()" class="flex-1 bg-red-500 text-white font-bold text-xs py-2 rounded-lg hover:bg-red-600">- Pop (Ambil Atas)</button>
+                            </div>
+                        </div>
+
+                        <!-- QUEUE -->
+                        <div class="bg-sky-50 border-2 border-sky-200 p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-bold text-lg text-sky-900">2. Queue (Antrean / FIFO)</h4>
+                                <span class="text-xs bg-sky-200 text-sky-800 font-bold px-2 py-1 rounded">First In, First Out</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-4">
+                                Seperti **antrean loket tiket**. Catatan fakta yang pertama kali masuk antrean akan **pertama kali** disajikan dalam paragraf laporan!
+                            </p>
+                            <!-- Mini Demo Queue -->
+                            <div class="bg-white p-3 rounded-xl border mb-3 min-h-[120px] flex items-center gap-1 overflow-x-auto" id="queue-container">
+                                <div class="text-xs text-slate-400 text-center w-full">Antrean Fakta Masih Kosong</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="enqueueQueue()" class="flex-1 bg-sky-500 text-white font-bold text-xs py-2 rounded-lg hover:bg-sky-600">+ Enqueue (Antrekan)</button>
+                                <button onclick="dequeueQueue()" class="flex-1 bg-indigo-500 text-white font-bold text-xs py-2 rounded-lg hover:bg-indigo-600">- Dequeue (Proses)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3 GIM INTERAKTIF ================= -->
+        <section id="tab-gim" class="tab-content hidden">
+            <div class="pixar-card p-6 md:p-8">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <h2 class="text-3xl font-extrabold text-indigo-900 mb-2">🎮 Arena 3 Mini Gim LHO</h2>
+                    <p class="text-slate-600 text-sm">Pilih gim di bawah untuk menguji ketangkasan & logika observasimu!</p>
+                </div>
+
+                <!-- Game Selector Tabs -->
+                <div class="flex justify-center gap-2 mb-8 flex-wrap">
+                    <button onclick="selectGame(1)" id="gim-tab-1" class="gim-select-btn bg-purple-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow">Gim 1: Detektif Kebahasaan</button>
+                    <button onclick="selectGame(2)" id="gim-tab-2" class="gim-select-btn bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-purple-100">Gim 2: Susun Struktur LHO</button>
+                    <button onclick="selectGame(3)" id="gim-tab-3" class="gim-select-btn bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-purple-100">Gim 3: Master Stack & Queue</button>
+                </div>
+
+                <!-- GAME 1: Detektif Kebahasaan -->
+                <div id="game-container-1" class="game-box border-4 border-purple-200 p-6 rounded-3xl bg-purple-50/50">
+                    <div class="text-center mb-6">
+                        <span class="bg-purple-200 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Tantangan Kalimat</span>
+                        <h3 class="text-xl font-bold text-purple-900 mt-2">Pisahkan Kalimat Definisi vs Deskripsi!</h3>
+                        <p class="text-xs text-slate-500">Klasifikasikan kalimat di bawah ini dengan menekan tombol yang tepat.</p>
+                    </div>
+
+                    <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl border-2 border-purple-200 shadow-md text-center mb-6">
+                        <p class="text-xs font-bold text-slate-400 mb-2">Soal <span id="g1-index">1</span> dari 4</p>
+                        <p id="g1-sentence" class="text-lg font-bold text-slate-800 my-4 min-h-[60px] flex items-center justify-center">"Kemangi adalah dedaunan kecil yang memiliki aroma khas limau."</p>
+                        <div id="g1-feedback" class="text-sm font-bold h-6 mb-2"></div>
+                    </div>
+
+                    <div class="flex justify-center gap-4 max-w-xs mx-auto">
+                        <button onclick="checkG1('definisi')" class="pixar-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-3d-btn flex-1">
+                             Kalimat Definisi
+                        </button>
+                        <button onclick="checkG1('deskripsi')" class="pixar-btn bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-3d-btn-green flex-1">
+                             Kalimat Deskripsi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GAME 2: Susun Struktur LHO -->
+                <div id="game-container-2" class="game-box border-4 border-indigo-200 p-6 rounded-3xl bg-indigo-50/50 hidden">
+                    <div class="text-center mb-6">
+                        <span class="bg-indigo-200 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">Tantangan Urutan</span>
+                        <h3 class="text-xl font-bold text-indigo-900 mt-2">Urutkan Struktur Teks LHO dengan Benar!</h3>
+                        <p class="text-xs text-slate-500">Klik item untuk memasukkannya ke urutan susunan dari awal hingga akhir (1 - 4).</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                        <!-- Pilihan Acak -->
+                        <div class="bg-white p-4 rounded-2xl border-2 border-indigo-100">
+                            <h4 class="font-bold text-sm text-slate-500 mb-3">Pilihan Bagian (Klik untuk pilih):</h4>
+                            <div id="g2-options" class="space-y-2">
+                                <!-- Dynamic Options -->
+                            </div>
+                        </div>
+
+                        <!-- Hasil Susunan -->
+                        <div class="bg-indigo-100/60 p-4 rounded-2xl border-2 border-indigo-200">
+                            <h4 class="font-bold text-sm text-indigo-900 mb-3">Urutan Susunanmu:</h4>
+                            <div id="g2-slots" class="space-y-2 min-h-[180px]">
+                                <!-- Slots -->
+                            </div>
+                            <button onclick="resetG2()" class="mt-3 text-xs text-indigo-600 font-bold underline cursor-pointer">Reset Urutan</button>
+                        </div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button onclick="checkG2()" class="pixar-btn bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl shadow-3d-btn-green">
+                            Periksa Hasil Susunan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GAME 3: Master Stack & Queue -->
+                <div id="game-container-3" class="game-box border-4 border-amber-200 p-6 rounded-3xl bg-amber-50/50 hidden">
+                    <div class="text-center mb-6">
+                        <span class="bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Tantangan Logika Data</span>
+                        <h3 class="text-xl font-bold text-amber-900 mt-2">Kuis Logika Stack vs Queue</h3>
+                        <p class="text-xs text-slate-500">Pahami skenario pengolahan data observasi berikut!</p>
+                    </div>
+
+                    <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl border-2 border-amber-200 shadow-md text-center mb-6">
+                        <p id="g3-question" class="text-base md:text-lg font-bold text-slate-800 my-2">
+                            "Guru menyuruh murid berbaris mengantre memasukkan data bunga. Murid yang datang **pertama kali** akan dilayani **pertama kali**."
+                        </p>
+                        <p class="text-xs text-indigo-600 font-semibold mt-2">Konsep apakah yang digunakan dalam skenario di atas?</p>
+                    </div>
+
+                    <div class="flex justify-center gap-4 max-w-xs mx-auto">
+                        <button onclick="checkG3('queue')" class="pixar-btn bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-xl shadow-3d-btn flex-1">
+                             Queue (Antrean)
+                        </button>
+                        <button onclick="checkG3('stack')" class="pixar-btn bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl shadow-3d-btn-yellow flex-1">
+                             Stack (Tumpukan)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= KUIS EVALUASI ================= -->
+        <section id="tab-kuis" class="tab-content hidden">
+            <div class="pixar-card p-6 md:p-10 relative">
+                
+                <!-- Quiz Container -->
+                <div id="quiz-box">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <div>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">Kuis Evaluasi PG</span>
+                            <h2 class="text-2xl font-bold text-slate-800 mt-1">Uji Pemahaman LHO & Data</h2>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 font-bold block">SOAL</span>
+                            <span id="quiz-progress" class="text-xl font-extrabold text-purple-600">1 / 5</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="mb-6">
+                        <h3 id="quiz-question" class="text-lg md:text-xl font-bold text-slate-800 mb-4">
+                            <!-- Question text loaded dynamically -->
+                        </h3>
+                        <div id="quiz-options" class="space-y-3">
+                            <!-- Options loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Next Button -->
+                    <div class="flex justify-between items-center border-t pt-4">
+                        <p id="quiz-hint" class="text-xs text-slate-400 italic">Pilih salah satu jawaban yang benar.</p>
+                        <button id="quiz-next-btn" onclick="nextQuestion()" class="pixar-btn bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-3d-btn opacity-50 cursor-not-allowed" disabled>
+                            Soal Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Result (Hidden initially) -->
+                <div id="quiz-result" class="hidden text-center py-8">
+                    <div class="w-28 h-28 bg-yellow-400 text-white rounded-full flex items-center justify-center text-5xl mx-auto mb-4 shadow-xl border-4 border-white animate-bounce">
+                        🏆
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 mb-1">Hasil Kuis Evaluasi</h2>
+                    <p class="text-slate-500 text-sm mb-6">Hebat! Kamu telah menyelesaikan Kuis Observasi.</p>
+
+                    <div class="bg-purple-50 max-w-sm mx-auto p-6 rounded-3xl border-2 border-purple-200 mb-8">
+                        <p class="text-xs text-purple-600 font-bold uppercase tracking-wider mb-1">Skor Akhir Kamu</p>
+                        <div id="final-score" class="text-6xl font-black text-purple-700">100</div>
+                        <p id="final-message" class="text-sm font-bold text-slate-700 mt-2">Luar Biasa! Pemahamanmu Sempurna! 🎉</p>
+                    </div>
+
+                    <button onclick="restartQuiz()" class="pixar-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-3d-btn">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Coba Kuis Lagi
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PENGEMBANG ================= -->
+        <section id="tab-pengembang" class="tab-content hidden">
+            <div class="pixar-card p-6 md:p-10 max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Profil Guru & Pengembang</span>
+                    <h2 class="text-3xl font-extrabold text-slate-800 mt-2">Tentang Pengembang MPI</h2>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-purple-50 to-indigo-50 p-6 md:p-8 rounded-3xl border-2 border-purple-100 shadow-sm">
+                    <!-- Pixar Style Developer Avatar -->
+                    <div class="relative flex-shrink-0">
+                        <div class="w-36 h-36 bg-gradient-to-tr from-yellow-400 to-purple-500 rounded-3xl p-1.5 shadow-xl transform -rotate-3">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" alt="Tria Achiria" class="w-full h-full object-cover rounded-[20px] border-2 border-white">
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-yellow-400 text-slate-900 font-black p-2 rounded-xl text-xs shadow">
+                            ⭐ Guru BI
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-center md:text-left">
+                        <div>
+                            <h3 class="text-2xl font-bold text-indigo-950">Tria Achiria, S.Pd.</h3>
+                            <p class="text-purple-600 font-semibold text-sm">Guru Bahasa Indonesia</p>
+                        </div>
+
+                        <div class="space-y-1.5 text-sm text-slate-600">
+                            <p class="flex items-center justify-center md:justify-start gap-2">
+                                <i class="fa-solid fa-school text-indigo-500 w-5"></i>
+                                <span><strong>SMP 2 Daar El Qolam</strong></span>
+                            </p>
+                            <p class="flex items-center justify-center md:justify-start gap-2">
+                                <i class="fa-solid fa-graduation-cap text-indigo-500 w-5"></i>
+                                <span>Fase D • Kelas 9 SMP</span>
+                            </p>
+                            <p class="flex items-center justify-center md:justify-start gap-2">
+                                <i class="fa-solid fa-laptop-code text-indigo-500 w-5"></i>
+                                <span>Pengembang Media Pembelajaran Interaktif Berbasis Web</span>
+                            </p>
+                        </div>
+
+                        <div class="pt-2">
+                            <span class="inline-block bg-white text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200">
+                                💡 "Belajar Bahasa Indonesia Lebih Seru, Interaktif, dan Bermakna!"
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-md border-t-2 border-purple-100 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
+            &copy; 2026 Media Pembelajaran Interaktif Teks LHO • Didesain oleh <strong>Tria Achiria</strong> (SMP 2 Daar El Qolam)
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Audio Synthesizer using Web Audio API (No external sound files required)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playCorrectSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playWrongSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+            osc.frequency.setValueAtTime(146.83, audioCtx.currentTime + 0.15); // D3
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playCheerSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            // Fanfare sequence
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + idx * 0.12);
+                osc.stop(audioCtx.currentTime + idx * 0.12 + 0.4);
+            });
+        }
+
+        // Navigation Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // Sub Materi Switcher
+        function showSubMateri(subId) {
+            document.querySelectorAll('.submateri-card').forEach(c => c.classList.add('hidden'));
+            document.getElementById('sub-' + subId).classList.remove('hidden');
+            
+            document.querySelectorAll('.submateri-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-700');
+            });
+            event.currentTarget.classList.remove('bg-white', 'text-slate-700');
+            event.currentTarget.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        // Lab Observasi Bunga
+        const flowerData = {
+            mahkota: {
+                title: "Deskripsi Bagian: Mahkota Bunga Mawar/Kemangi",
+                body: "Mahkota bunga berwarna merah jambu cerah (atau putih keunguan pada kemangi), berukuran diameter 3-5 cm. Berfungsi menarik perhatian serangga penyerbuk.",
+                tag: "Deskripsi Bagian",
+                img: "https://images.unsplash.com/photo-1560717845-968823efbee1?auto=format&fit=crop&q=80&w=600"
+            },
+            daun: {
+                title: "Deskripsi Bagian: Daun & Batang",
+                body: "Daun berbentuk majemuk menyirip dengan tepi bergerigi halus. Batang berkayu dengan duri-duri kecil untuk perlindungan diri dari herbivora.",
+                tag: "Deskripsi Bagian",
+                img: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=600"
+            },
+            manfaat: {
+                title: "Deskripsi Manfaat",
+                body: "Bunga ini dimanfaatkan sebagai tanaman hias penyegar ruangan, bahan minyak atsiri pembuatan parfum, serta ekstrak tanaman herbal berkhasiat.",
+                tag: "Deskripsi Manfaat",
+                img: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&q=80&w=600"
+            }
+        };
+
+        function observePart(part) {
+            const data = flowerData[part];
+            document.getElementById('lab-title').innerText = data.title;
+            document.getElementById('lab-body').innerText = data.body;
+            document.getElementById('lab-tag-text').innerText = data.tag;
+            document.getElementById('lab-tag').classList.remove('hidden');
+            document.getElementById('lab-flower-img').src = data.img;
+            playCorrectSound();
+        }
+
+        // Stack & Queue Live Demo
+        let stackItems = [];
+        let queueItems = [];
+
+        function pushStack() {
+            if (stackItems.length >= 4) return;
+            stackItems.push(`Catatan Fakta #${stackItems.length + 1}`);
+            renderStack();
+        }
+        function popStack() {
+            stackItems.pop();
+            renderStack();
+        }
+        function renderStack() {
+            const el = document.getElementById('stack-container');
+            if (stackItems.length === 0) {
+                el.innerHTML = '<div class="text-xs text-slate-400 text-center my-auto">Tumpukan Catatan Observasi Masih Kosong</div>';
+                return;
+            }
+            el.innerHTML = stackItems.map(item => `
+                <div class="bg-amber-100 border border-amber-300 text-amber-900 font-bold text-xs p-2 rounded text-center shadow-sm">
+                    📦 ${item}
+                </div>
+            `).join('');
+        }
+
+        function enqueueQueue() {
+            if (queueItems.length >= 4) return;
+            queueItems.push(`Fakta #${queueItems.length + 1}`);
+            renderQueue();
+        }
+        function dequeueQueue() {
+            queueItems.shift();
+            renderQueue();
+        }
+        function renderQueue() {
+            const el = document.getElementById('queue-container');
+            if (queueItems.length === 0) {
+                el.innerHTML = '<div class="text-xs text-slate-400 text-center w-full my-auto">Antrean Fakta Masih Kosong</div>';
+                return;
+            }
+            el.innerHTML = queueItems.map(item => `
+                <div class="bg-sky-100 border border-sky-300 text-sky-900 font-bold text-xs p-2 rounded text-center whitespace-nowrap flex-1 shadow-sm">
+                    🚶 ${item}
+                </div>
+            `).join('');
+        }
+
+        // Mini Games Logic
+        function selectGame(gameNum) {
+            document.querySelectorAll('.game-box').forEach(g => g.classList.add('hidden'));
+            document.getElementById('game-container-' + gameNum).classList.remove('hidden');
+
+            document.querySelectorAll('.gim-select-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+            document.getElementById('gim-tab-' + gameNum).classList.remove('bg-slate-200', 'text-slate-700');
+            document.getElementById('gim-tab-' + gameNum).classList.add('bg-purple-600', 'text-white');
+        }
+
+        // Gim 1 Data
+        const g1Questions = [
+            { text: '"Kemangi adalah dedaunan kecil yang memiliki aroma khas limau."', type: 'definisi' },
+            { text: '"Bunga mawar memiliki mahkota berwarna merah menyala dan berbau wangi."', type: 'deskripsi' },
+            { text: '"Observasi merupakan kegiatan pengamatan secara sistematis terhadap suatu objek."', type: 'definisi' },
+            { text: '"Batang tanaman ini berdiameter 2 cm dan memiliki tekstur kasar."', type: 'deskripsi' }
+        ];
+        let g1Current = 0;
+
+        function checkG1(userChoice) {
+            const correctChoice = g1Questions[g1Current].type;
+            const feedbackEl = document.getElementById('g1-feedback');
+
+            if (userChoice === correctChoice) {
+                playCorrectSound();
+                feedbackEl.innerText = "✨ Benar sekali! Hebat!";
+                feedbackEl.className = "text-sm font-bold h-6 mb-2 text-green-600";
+            } else {
+                playWrongSound();
+                feedbackEl.innerText = "❌ Kurang tepat, coba ingat kata kuncinya!";
+                feedbackEl.className = "text-sm font-bold h-6 mb-2 text-red-500";
+            }
+
+            setTimeout(() => {
+                g1Current = (g1Current + 1) % g1Questions.length;
+                document.getElementById('g1-index').innerText = g1Current + 1;
+                document.getElementById('g1-sentence').innerText = g1Questions[g1Current].text;
+                feedbackEl.innerText = "";
+            }, 1200);
+        }
+
+        // Gim 2 Data (Susun Struktur)
+        const g2Items = [
+            { id: 1, text: "Judul" },
+            { id: 2, text: "Definisi Umum / Klasifikasi" },
+            { id: 3, text: "Deskripsi Bagian" },
+            { id: 4, text: "Deskripsi Manfaat" }
+        ];
+        let g2UserOrder = [];
+
+        function initG2() {
+            g2UserOrder = [];
+            const shuffled = [...g2Items].sort(() => Math.random() - 0.5);
+            const optEl = document.getElementById('g2-options');
+            optEl.innerHTML = shuffled.map(item => `
+                <button onclick="pickG2(${item.id})" id="g2-opt-${item.id}" class="w-full text-left bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold p-2.5 rounded-xl border border-indigo-200 text-xs transition">
+                    ➕ ${item.text}
+                </button>
+            `).join('');
+            renderG2Slots();
+        }
+
+        function pickG2(id) {
+            if (g2UserOrder.includes(id)) return;
+            g2UserOrder.push(id);
+            document.getElementById(`g2-opt-${id}`).classList.add('opacity-40', 'pointer-events-none');
+            renderG2Slots();
+        }
+
+        function renderG2Slots() {
+            const slotsEl = document.getElementById('g2-slots');
+            if (g2UserOrder.length === 0) {
+                slotsEl.innerHTML = '<div class="text-xs text-slate-400 italic">Klik pilihan di sebelah kiri untuk mengisi urutan.</div>';
+                return;
+            }
+            slotsEl.innerHTML = g2UserOrder.map((id, index) => {
+                const item = g2Items.find(x => x.id === id);
+                return `
+                    <div class="bg-white p-2 rounded-xl border border-indigo-200 font-bold text-xs text-indigo-950 flex justify-between items-center">
+                        <span>${index + 1}. ${item.text}</span>
+                        <span class="text-xs text-green-600">✓</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetG2() {
+            initG2();
+        }
+
+        function checkG2() {
+            if (g2UserOrder.length < 4) {
+                alert("Pilih semua 4 bagian terlebih dahulu!");
+                return;
+            }
+            const isCorrect = g2UserOrder.every((val, idx) => val === idx + 1);
+            if (isCorrect) {
+                playCorrectSound();
+                alert("🎉 Luar biasa! Urutan struktur LHO kamu sempurna!");
+            } else {
+                playWrongSound();
+                alert("❌ Urutan belum pas. Mengingat kembali: Judul -> Definisi Umum -> Deskripsi Bagian -> Deskripsi Manfaat.");
+            }
+        }
+
+        // Gim 3 Logic
+        function checkG3(choice) {
+            if (choice === 'queue') {
+                playCorrectSound();
+                alert("🎉 BENAR! Skenario Antrean Makanan/Tiket (FIFO) menggunakan konsep Queue!");
+            } else {
+                playWrongSound();
+                alert("❌ Kurang Tepat! Stack menggunakan LIFO (yang terakhir masuk keluar pertama).");
+            }
+        }
+
+        // Kuis Evaluasi Data
+        const quizData = [
+            {
+                q: "1. Apa fungsi utama dari Teks Laporan Hasil Observasi (LHO)?",
+                opts: [
+                    "A. Menceritakan kisah dongeng rekaan penulis",
+                    "B. Memberikan informasi ilmiah faktual mengenai suatu objek setelah penelitian",
+                    "C. Membujuk pembaca agar membeli produk tertentu",
+                    "D. Menyampaikan puisi keindahan alam"
+                ],
+                ans: 1
+            },
+            {
+                q: "2. Manakah kalimat di bawah ini yang merupakan Kalimat Definisi?",
+                opts: [
+                    "A. Bunga kemangi berwarna hijau muda segar.",
+                    "B. Kemangi adalah dedaunan kecil yang memiliki aroma khas limau.",
+                    "C. Batang tanaman mawar dipenuhi duri tajam.",
+                    "D. Tanaman ini ditanam di pekarangan rumah."
+                ],
+                ans: 1
+            },
+            {
+                q: "3. Bagian struktur LHO yang berisi rincian penjelas objek (seperti daun, batang, atau warna) disebut...",
+                opts: [
+                    "A. Judul",
+                    "B. Definisi Umum",
+                    "C. Deskripsi Bagian",
+                    "D. Deskripsi Manfaat"
+                ],
+                ans: 2
+            },
+            {
+                q: "4. Kalimat deskripsi bertujuan untuk...",
+                opts: [
+                    "A. Memberikan pengertian umum suatu kata",
+                    "B. Menggambarkan rincian ciri-ciri fisik objek secara jelas",
+                    "C. Menyimpulkan isi laporan secara singkat",
+                    "D. Mengajak pembaca bermain gim"
+                ],
+                ans: 1
+            },
+            {
+                q: "5. Dalam pengolahan data fakta observasi, konsep 'Queue' (Antrean) memiliki prinsip yaitu...",
+                opts: [
+                    "A. First In, First Out (Data pertama masuk, pertama kali diproses)",
+                    "B. Last In, First Out (Data terakhir masuk, pertama kali diproses)",
+                    "C. Acak tanpa aturan",
+                    "D. Data disimpan selamanya tanpa diambil"
+                ],
+                ans: 0
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let selectedOption = null;
+        let score = 0;
+
+        function loadQuizQuestion() {
+            const current = quizData[currentQuizIndex];
+            document.getElementById('quiz-progress').innerText = `${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('quiz-question').innerText = current.q;
+            
+            const optsContainer = document.getElementById('quiz-options');
+            optsContainer.innerHTML = current.opts.map((opt, idx) => `
+                <div onclick="selectQuizOption(${idx})" id="opt-${idx}" class="quiz-opt-btn bg-slate-50 hover:bg-purple-50 border-2 border-slate-200 p-3.5 rounded-2xl cursor-pointer font-semibold text-slate-700 transition flex justify-between items-center">
+                    <span>${opt}</span>
+                    <span class="w-6 h-6 border-2 border-slate-300 rounded-full flex items-center justify-center text-xs check-icon"></span>
+                </div>
+            `).join('');
+
+            selectedOption = null;
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            nextBtn.disabled = true;
+        }
+
+        function selectQuizOption(idx) {
+            selectedOption = idx;
+            document.querySelectorAll('.quiz-opt-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.classList.remove('bg-slate-50', 'border-slate-200');
+                    btn.classList.add('bg-purple-100', 'border-purple-600', 'text-purple-900');
+                } else {
+                    btn.classList.remove('bg-purple-100', 'border-purple-600', 'text-purple-900');
+                    btn.classList.add('bg-slate-50', 'border-slate-200');
+                }
+            });
+
+            const nextBtn = document.getElementById('quiz-next-btn');
+            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            nextBtn.disabled = false;
+        }
+
+        function nextQuestion() {
+            if (selectedOption === null) return;
+
+            // Check Answer
+            if (selectedOption === quizData[currentQuizIndex].ans) {
+                score += 20;
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+
+            currentQuizIndex++;
+            if (currentQuizIndex < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            const msg = document.getElementById('final-message');
+            if (score >= 80) {
+                msg.innerText = "Luar Biasa! Pemahaman LHO Kamu Sempurna! 🎉";
+                playCheerSound();
+                // Trigger Confetti
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+            } else {
+                msg.innerText = "Bagus! Terus tingkatkan pemahamanmu tentang Teks LHO!";
+            }
+        }
+
+        function restartQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        // Window Onload Initialization
+        window.onload = function() {
+            initG2();
+            loadQuizQuestion();
+            renderStack();
+            renderQueue();
+        };
+    </script>
+</body>
+</html>
